@@ -9,7 +9,7 @@ import org.apache.flink.types.Row
 
 /**
  * @ClassName: UDFdemo1
- * @Description: TODO
+ * @Description: flink函数的学习
  * @author: linxi
  * @date: 2020/11/19  16:57
  */
