@@ -6,7 +6,6 @@ import org.apache.flink.table.api.{DataTypes, EnvironmentSettings, Table, TableE
 import org.apache.flink.table.api.scala.StreamTableEnvironment
 import org.apache.flink.table.descriptors.{Csv, FileSystem, Kafka, Schema}
 import org.apache.flink.table.catalog.hive.HiveCatalog
-import org.apache.flink.table.functions.ScalarFunction
 import org.apache.flink.types.Row
 
 /**
