@@ -17,11 +17,14 @@ import org.apache.flink.util.Collector
 
 import scala.collection.mutable.ListBuffer
 
+/**
+ * TODO:实时热门商品统计
+ */
 object UserBehaviourAnalysis {
   def main(args: Array[String]): Unit = {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
-    //使用事件时间
+    //告诉flink使用事件时间做数据处理，flink默认使用的ProcessingTime
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
     import org.apache.flink.api.scala._
     //读取数据
@@ -32,7 +35,7 @@ object UserBehaviourAnalysis {
            UserBehaviour(arr(0).toLong,arr(1).toLong,arr(2).toInt,arr(3),arr(4).toLong)
          })
       .filter(_.behaviour.equals("pv")) //过滤出pv事件
-      .assignAscendingTimestamps(_.timestamp) //分配升序时间戳
+      .assignAscendingTimestamps(_.timestamp) //分配升序时间戳和watermark
       .keyBy(_.itemId) //由于需要统计热门商品，所以使用itemId来进行分流
       .timeWindow(Time.hours(1),Time.minutes(5))//每隔五分钟统计最近一小时的浏览次数
       //增量聚合和全窗口聚合结合使用
@@ -117,13 +120,7 @@ object UserBehaviourAnalysis {
 
 }
 
-case class UserBehaviour(
-                        userId:Long,
-                        itemId:Long,
-                        categoryId:Int,
-                        behaviour: String,
-                        timestamp:Long
-                        )
+case class UserBehaviour(userId:Long, itemId:Long, categoryId:Int,  behaviour: String, timestamp:Long )
 
 case class ItemViewCount(itemId:Long,//商品id
                          windowEnd:Long,//窗口结束时间
