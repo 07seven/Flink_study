@@ -41,14 +41,15 @@ object LoginFailWithCep {
     val patternStream: PatternStream[LoginEvent] = CEP.pattern(loginEventStream.keyBy(_.userId), loginFailPattern)
     // .select方法传入一个 pattern select function，当检测到定义好的模式序列时就会调用
     val loginFailDataStream = patternStream
-      .select((pattern: Map[String, Iterable[LoginEvent]]) => {
-        val first: LoginEvent = pattern.getOrElse("begin", null).iterator.next()
-        val sencond: LoginEvent = pattern.getOrElse("next", null).iterator.next()
-        (sencond.userId, sencond.ip, sencond.eventType)
+      .select(
+        (pattern: scala.collection.Map[String, Iterable[LoginEvent]]) => {
+          val first: LoginEvent = pattern.getOrElse("begin", null).iterator.next()
+          val sencond: LoginEvent = pattern.getOrElse("next", null).iterator.next()
+          (sencond.userId, sencond.ip, sencond.eventType)
       })
-
     // 将匹配到的符合条件的事件打印出来
     loginFailDataStream.print()
     env.execute("Login Fail Detect Job")
+
   }
 }
